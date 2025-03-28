@@ -53,7 +53,7 @@ def messages_for_openai(system_prompt, user_prompt):
     ]
     return messages
 
-def get_openai_response(model, messages):
+def message_gpt(model, messages):
    
    # Call the OpenAI API
     response = openai.chat.completions.create(
@@ -66,7 +66,7 @@ def get_openai_response(model, messages):
     # if response.status_code != 200:
     #     raise Exception(f"Error: {response.status_code} - {response.text}")
     
-    return response
+    return response.choices[0].message.content
 
 # Display the response in Markdown format
 def display_markdown(content):

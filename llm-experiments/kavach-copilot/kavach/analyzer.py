@@ -4,14 +4,15 @@
 # @description: This file contains the Analyzer class which is responsible for analyzing the code and providing suggestions.
 # @license: MIT
 
-import os
-import requests
-from dotenv import load_dotenv
+# import os
+# import requests
+import gradio as gr
+# from dotenv import load_dotenv
 #from bs4 import BeautifulSoup
 # from IPython.display import Markdown, display
 from openai import OpenAI
 from utils import get_api_key, messages_for_openai, \
-    get_openai_response, display_markdown
+    message_gpt, display_markdown
 
 OPENAI_MODEL = "gpt-4o-mini"
 
@@ -32,18 +33,18 @@ openai = OpenAI()
 # print(response.choices[0].message.content)
 
 # blob of code to test 
-SAMPLE_CODE = """
-def add(a, b):
-    return a + b
-def subtract(a, b): 
-    return a - b
-def multiply(a, b):     
-    return a * b
-def divide(a, b):                   
-    if b == 0:
-        raise ValueError("Cannot divide by zero")
-    return a / b    "
-    """
+# SAMPLE_CODE = """
+# def add(a, b):
+#     return a + b
+# def subtract(a, b): 
+#     return a - b
+# def multiply(a, b):     
+#     return a * b
+# def divide(a, b):                   
+#     if b == 0:
+#         raise ValueError("Cannot divide by zero")
+#     return a / b    "
+#     """
 
 # Define the system prompt for the LLM
 LANGUAGE= "python"
@@ -59,19 +60,36 @@ Your task is to:
 Be concise, use bullet points, and avoid unnecessary filler text.
 """
 
-user_prompt = f"""
-Analyze the following Python code for security vulnerabilities:
-{SAMPLE_CODE}
-"""
+# user_prompt = f"""
+# Analyze the following Python code for security vulnerabilities:
+# {SAMPLE_CODE}
+# """
 
 print("System Prompt:\n", system_prompt)
-print("User Prompt:\n", user_prompt)
+# print("User Prompt:\n", user_prompt)
 
 
-messages = messages_for_openai(system_prompt, user_prompt)
+
 # Call the OpenAI API
-response = get_openai_response(OPENAI_MODEL, messages)
+# response = message_gpt(OPENAI_MODEL, messages)
 # Print the response
-print("Response from OpenAI API:\n", response.choices[0].message.content)
+# print("Response from OpenAI API:\n", response)
 
-display_markdown(response.choices[0].message.content)
+# display_markdown(response)
+
+view = gr.Interface(
+    fn=message_gpt,
+    inputs=[
+        # gr.inputs.Textbox(label="System Prompt", default=system_prompt),
+        gr.Textbox(label="Code Input", lines=10, placeholder="Paste your code here..."),
+    ],
+    outputs=gr.Textbox(label="Response", lines=20, placeholder="Response from OpenAI API..."),
+    title="Secure Code Analyzer",
+    description="Analyze code for security vulnerabilities and get suggestions.",
+    theme="default"
+)
+view.launch()
+
+# messages = messages_for_openai(system_prompt, user_prompt)
+
+# gr.Interface(fn=message_gpt,inputs="text", outputs="text").launch()
